@@ -7,6 +7,48 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Vertical" Grid.Row="0" Margin="0,0,0,10">
+            <WrapPanel Margin="0,0,0,5">
+                <Label Content="ID Cliente:" Width="90"/>
+                <TextBox x:Name="txtIdCliente" Width="100"/>
+                <Label Content="Compañía:" Width="90" Margin="10,0,0,0"/>
+                <TextBox x:Name="txtNombreCompañia" Width="200"/>
+                <Label Content="Contacto:" Width="90" Margin="10,0,0,0"/>
+                <TextBox x:Name="txtNombreContacto" Width="150"/>
+            </WrapPanel>
+            <WrapPanel Margin="0,0,0,5">
+                <Label Content="Cargo:" Width="90"/>
+                <TextBox x:Name="txtCargoContacto" Width="150"/>
+                <Label Content="Dirección:" Width="90" Margin="10,0,0,0"/>
+                <TextBox x:Name="txtDireccion" Width="200"/>
+                <Label Content="Ciudad:" Width="90" Margin="10,0,0,0"/>
+                <TextBox x:Name="txtCiudad" Width="120"/>
+            </WrapPanel>
+            <WrapPanel Margin="0,0,0,5">
+                <Label Content="Región:" Width="90"/>
+                <TextBox x:Name="txtRegion" Width="100"/>
+                <Label Content="Cod. Postal:" Width="90" Margin="10,0,0,0"/>
+                <TextBox x:Name="txtCodPostal" Width="100"/>
+                <Label Content="País:" Width="90" Margin="10,0,0,0"/>
+                <TextBox x:Name="txtPais" Width="120"/>
+            </WrapPanel>
+            <WrapPanel Margin="0,0,0,5">
+                <Label Content="Teléfono:" Width="90"/>
+                <TextBox x:Name="txtTelefono" Width="120"/>
+                <Label Content="Fax:" Width="90" Margin="10,0,0,0"/>
+                <TextBox x:Name="txtFax" Width="120"/>
+            </WrapPanel>
+            <WrapPanel Margin="0,10,0,0">
+                <Button x:Name="btnAgregar" Content="Agregar" Width="100" Margin="0,0,10,0" Click="btnAgregar_Click"/>
+                <Button x:Name="btnActualizar" Content="Actualizar" Width="100" Margin="0,0,10,0" Click="btnActualizar_Click"/>
+                <Button x:Name="btnEliminar" Content="Eliminar" Width="100" Margin="0,0,10,0" Click="btnEliminar_Click"/>
+                <Button x:Name="btnListar" Content="Listar" Width="100" Click="btnListar_Click"/>
+            </WrapPanel>
+        </StackPanel>
+        <DataGrid x:Name="dgClientes" Grid.Row="1" AutoGenerateColumns="True" IsReadOnly="True" SelectionMode="Single" SelectionChanged="dgClientes_SelectionChanged"/>
     </Grid>
 </Window>
