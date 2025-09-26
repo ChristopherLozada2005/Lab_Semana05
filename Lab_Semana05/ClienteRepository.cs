@@ -21,8 +21,8 @@ namespace Lab_Semana05
             using var conn = new SqlConnection(connectionString);
             conn.Open();
             string query = @"INSERT INTO clientes 
-                (idCliente, NombreCompañia, NombreContacto, CargoContacto, Direccion, Ciudad, Region, CodPostal, Pais, Telefono, Fax)
-                VALUES (@idCliente, @NombreCompañia, @NombreContacto, @CargoContacto, @Direccion, @Ciudad, @Region, @CodPostal, @Pais, @Telefono, @Fax)";
+        (idCliente, NombreCompañia, NombreContacto, CargoContacto, Direccion, Ciudad, Region, CodPostal, Pais, Telefono, Fax, enable)
+        VALUES (@idCliente, @NombreCompañia, @NombreContacto, @CargoContacto, @Direccion, @Ciudad, @Region, @CodPostal, @Pais, @Telefono, @Fax, @Enable)";
             using var cmd = new SqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@idCliente", cliente.IdCliente);
             cmd.Parameters.AddWithValue("@NombreCompañia", cliente.NombreCompañia);
@@ -35,6 +35,7 @@ namespace Lab_Semana05
             cmd.Parameters.AddWithValue("@Pais", (object?)cliente.Pais ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@Telefono", (object?)cliente.Telefono ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@Fax", (object?)cliente.Fax ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@Enable", true);
             cmd.ExecuteNonQuery();
         }
 
@@ -43,7 +44,8 @@ namespace Lab_Semana05
             var clientes = new List<Cliente>();
             using var conn = new SqlConnection(connectionString);
             conn.Open();
-            string query = "SELECT * FROM clientes";
+            string query = @"SELECT idCliente, NombreCompañia, NombreContacto, CargoContacto, Direccion, Ciudad, Region, CodPostal, Pais, Telefono, Fax
+                     FROM clientes WHERE enable = 1";
             using var cmd = new SqlCommand(query, conn);
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
@@ -71,10 +73,10 @@ namespace Lab_Semana05
             using var conn = new SqlConnection(connectionString);
             conn.Open();
             string query = @"UPDATE clientes SET 
-                NombreCompañia=@NombreCompañia, NombreContacto=@NombreContacto, CargoContacto=@CargoContacto, 
-                Direccion=@Direccion, Ciudad=@Ciudad, Region=@Region, CodPostal=@CodPostal, 
-                Pais=@Pais, Telefono=@Telefono, Fax=@Fax
-                WHERE idCliente=@idCliente";
+        NombreCompañia=@NombreCompañia, NombreContacto=@NombreContacto, CargoContacto=@CargoContacto, 
+        Direccion=@Direccion, Ciudad=@Ciudad, Region=@Region, CodPostal=@CodPostal, 
+        Pais=@Pais, Telefono=@Telefono, Fax=@Fax
+        WHERE idCliente=@idCliente";
             using var cmd = new SqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@idCliente", cliente.IdCliente);
             cmd.Parameters.AddWithValue("@NombreCompañia", cliente.NombreCompañia);
@@ -94,10 +96,41 @@ namespace Lab_Semana05
         {
             using var conn = new SqlConnection(connectionString);
             conn.Open();
-            string query = "DELETE FROM clientes WHERE idCliente=@idCliente";
+            string query = "UPDATE clientes SET enable = 0 Where idCliente = @idCliente";
             using var cmd = new SqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@idCliente", idCliente);
             cmd.ExecuteNonQuery();
+        }
+
+        public List<Cliente> BuscarClientesPorNombre(string nombreCompania)
+        {
+            var clientes = new List<Cliente>();
+            using var conn = new SqlConnection(connectionString);
+            conn.Open();
+            string query = @"SELECT idCliente, NombreCompañia, NombreContacto, CargoContacto, Direccion, Ciudad, Region, CodPostal, Pais, Telefono, Fax
+                     FROM clientes
+                     WHERE enable = 1 AND NombreCompañia LIKE @nombre";
+            using var cmd = new SqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@nombre", "%" + nombreCompania + "%");
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                clientes.Add(new Cliente
+                {
+                    IdCliente = reader["idCliente"].ToString(),
+                    NombreCompañia = reader["NombreCompañia"].ToString(),
+                    NombreContacto = reader["NombreContacto"] as string,
+                    CargoContacto = reader["CargoContacto"] as string,
+                    Direccion = reader["Direccion"] as string,
+                    Ciudad = reader["Ciudad"] as string,
+                    Region = reader["Region"] as string,
+                    CodPostal = reader["CodPostal"] as string,
+                    Pais = reader["Pais"] as string,
+                    Telefono = reader["Telefono"] as string,
+                    Fax = reader["Fax"] as string
+                });
+            }
+            return clientes;
         }
     }
 }

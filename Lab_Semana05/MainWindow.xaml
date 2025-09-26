@@ -12,6 +12,14 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Vertical" Grid.Row="0" Margin="0,0,0,10">
+            <WrapPanel Margin="0,10,0,0">
+                <Button x:Name="btnAgregar" Content="Agregar" Width="100" Margin="0,0,10,0" Click="btnAgregar_Click"/>
+                <Button x:Name="btnActualizar" Content="Actualizar" Width="100" Margin="0,0,10,0" Click="btnActualizar_Click"/>
+                <Button x:Name="btnEliminar" Content="Eliminar" Width="100" Margin="0,0,10,0" Click="btnEliminar_Click"/>
+                <Button x:Name="btnListar" Content="Listar" Width="100" Click="btnListar_Click"/>
+                <TextBox x:Name="txtBuscar" Width="200" Margin="20,0,0,0" ToolTip="Buscar compañía..."/>
+                <Button x:Name="btnBuscar" Content="Buscar" Width="80" Margin="5,0,0,0" Click="btnBuscar_Click"/>
+            </WrapPanel>
             <WrapPanel Margin="0,0,0,5">
                 <Label Content="ID Cliente:" Width="90"/>
                 <TextBox x:Name="txtIdCliente" Width="100"/>
@@ -42,13 +50,21 @@
                 <Label Content="Fax:" Width="90" Margin="10,0,0,0"/>
                 <TextBox x:Name="txtFax" Width="120"/>
             </WrapPanel>
-            <WrapPanel Margin="0,10,0,0">
-                <Button x:Name="btnAgregar" Content="Agregar" Width="100" Margin="0,0,10,0" Click="btnAgregar_Click"/>
-                <Button x:Name="btnActualizar" Content="Actualizar" Width="100" Margin="0,0,10,0" Click="btnActualizar_Click"/>
-                <Button x:Name="btnEliminar" Content="Eliminar" Width="100" Margin="0,0,10,0" Click="btnEliminar_Click"/>
-                <Button x:Name="btnListar" Content="Listar" Width="100" Click="btnListar_Click"/>
-            </WrapPanel>
         </StackPanel>
-        <DataGrid x:Name="dgClientes" Grid.Row="1" AutoGenerateColumns="True" IsReadOnly="True" SelectionMode="Single" SelectionChanged="dgClientes_SelectionChanged"/>
+        <DataGrid x:Name="dgClientes" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single" SelectionChanged="dgClientes_SelectionChanged">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID Cliente" Binding="{Binding IdCliente}" />
+                <DataGridTextColumn Header="Compañía" Binding="{Binding NombreCompañia}" />
+                <DataGridTextColumn Header="Contacto" Binding="{Binding NombreContacto}" />
+                <DataGridTextColumn Header="Cargo" Binding="{Binding CargoContacto}" />
+                <DataGridTextColumn Header="Dirección" Binding="{Binding Direccion}" />
+                <DataGridTextColumn Header="Ciudad" Binding="{Binding Ciudad}" />
+                <DataGridTextColumn Header="Región" Binding="{Binding Region}" />
+                <DataGridTextColumn Header="Cod. Postal" Binding="{Binding CodPostal}" />
+                <DataGridTextColumn Header="País" Binding="{Binding Pais}" />
+                <DataGridTextColumn Header="Teléfono" Binding="{Binding Telefono}" />
+                <DataGridTextColumn Header="Fax" Binding="{Binding Fax}" />
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Window>

@@ -92,6 +92,12 @@ namespace Lab_Semana05
             }
         }
 
+        private void btnBuscar_Click(object sender, RoutedEventArgs e)
+        {
+            string nombre = txtBuscar.Text.Trim();
+            dgClientes.ItemsSource = clienteService.BuscarClientesPorNombre(nombre);
+        }
+
         private Cliente ObtenerClienteFormulario()
         {
             return new Cliente

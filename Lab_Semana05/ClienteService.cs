@@ -47,5 +47,10 @@ namespace Lab_Semana05
 
             repository.EliminarCliente(idCliente);
         }
+
+        public List<Cliente> BuscarClientesPorNombre(string nombreCompania)
+        {
+            return repository.BuscarClientesPorNombre(nombreCompania);
+        }
     }
 }
