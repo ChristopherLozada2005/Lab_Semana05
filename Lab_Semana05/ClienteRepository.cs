@@ -20,10 +20,10 @@ namespace Lab_Semana05
         {
             using var conn = new SqlConnection(connectionString);
             conn.Open();
-            string query = @"INSERT INTO clientes 
-        (idCliente, NombreCompañia, NombreContacto, CargoContacto, Direccion, Ciudad, Region, CodPostal, Pais, Telefono, Fax, enable)
-        VALUES (@idCliente, @NombreCompañia, @NombreContacto, @CargoContacto, @Direccion, @Ciudad, @Region, @CodPostal, @Pais, @Telefono, @Fax, @Enable)";
-            using var cmd = new SqlCommand(query, conn);
+
+            using var cmd = new SqlCommand("USP_AgregarCliente", conn);
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
             cmd.Parameters.AddWithValue("@idCliente", cliente.IdCliente);
             cmd.Parameters.AddWithValue("@NombreCompañia", cliente.NombreCompañia);
             cmd.Parameters.AddWithValue("@NombreContacto", (object?)cliente.NombreContacto ?? DBNull.Value);
@@ -36,17 +36,20 @@ namespace Lab_Semana05
             cmd.Parameters.AddWithValue("@Telefono", (object?)cliente.Telefono ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@Fax", (object?)cliente.Fax ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@Enable", true);
+
             cmd.ExecuteNonQuery();
         }
 
         public List<Cliente> ObtenerClientes()
         {
             var clientes = new List<Cliente>();
+
             using var conn = new SqlConnection(connectionString);
             conn.Open();
-            string query = @"SELECT idCliente, NombreCompañia, NombreContacto, CargoContacto, Direccion, Ciudad, Region, CodPostal, Pais, Telefono, Fax
-                     FROM clientes WHERE enable = 1";
-            using var cmd = new SqlCommand(query, conn);
+
+            using var cmd = new SqlCommand("USP_ListarClientes", conn);
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
             {
@@ -65,6 +68,7 @@ namespace Lab_Semana05
                     Fax = reader["Fax"] as string
                 });
             }
+
             return clientes;
         }
 
@@ -72,12 +76,10 @@ namespace Lab_Semana05
         {
             using var conn = new SqlConnection(connectionString);
             conn.Open();
-            string query = @"UPDATE clientes SET 
-        NombreCompañia=@NombreCompañia, NombreContacto=@NombreContacto, CargoContacto=@CargoContacto, 
-        Direccion=@Direccion, Ciudad=@Ciudad, Region=@Region, CodPostal=@CodPostal, 
-        Pais=@Pais, Telefono=@Telefono, Fax=@Fax
-        WHERE idCliente=@idCliente";
-            using var cmd = new SqlCommand(query, conn);
+
+            using var cmd = new SqlCommand("USP_ActualizarCliente", conn);
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
             cmd.Parameters.AddWithValue("@idCliente", cliente.IdCliente);
             cmd.Parameters.AddWithValue("@NombreCompañia", cliente.NombreCompañia);
             cmd.Parameters.AddWithValue("@NombreContacto", (object?)cliente.NombreContacto ?? DBNull.Value);
@@ -89,6 +91,7 @@ namespace Lab_Semana05
             cmd.Parameters.AddWithValue("@Pais", (object?)cliente.Pais ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@Telefono", (object?)cliente.Telefono ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@Fax", (object?)cliente.Fax ?? DBNull.Value);
+
             cmd.ExecuteNonQuery();
         }
 
@@ -96,20 +99,26 @@ namespace Lab_Semana05
         {
             using var conn = new SqlConnection(connectionString);
             conn.Open();
-            string query = "UPDATE clientes SET enable = 0 Where idCliente = @idCliente";
-            using var cmd = new SqlCommand(query, conn);
+
+            using var cmd = new SqlCommand("USP_EliminarCliente", conn);
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
             cmd.Parameters.AddWithValue("@idCliente", idCliente);
+
             cmd.ExecuteNonQuery();
         }
 
         public List<Cliente> BuscarClientesPorNombre(string nombreCompania)
         {
             var clientes = new List<Cliente>();
+
             using var conn = new SqlConnection(connectionString);
             conn.Open();
+
             using var cmd = new SqlCommand("USP_BuscarClientesPorNombre", conn);
             cmd.CommandType = System.Data.CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@nombre", nombreCompania);
+
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
             {
@@ -128,6 +137,7 @@ namespace Lab_Semana05
                     Fax = reader["Fax"] as string
                 });
             }
+
             return clientes;
         }
     }
