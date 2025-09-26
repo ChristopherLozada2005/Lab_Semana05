@@ -1,55 +1,71 @@
-﻿using Microsoft.Data.SqlClient;
-using System.Text;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Lab_Semana05
 {
     public partial class MainWindow : Window
     {
-        private string connectionString =
-            "Data Source=LAB1502-005\\SQLEXPRESS;" +
-            "Initial Catalog=Neptuno;" +
-            "User ID=userHugo;" +
-            "Password=12345678;" +
-            "TrustServerCertificate=True";
+            private readonly ClienteService clienteService;
 
         public MainWindow()
         {
             InitializeComponent();
+            var repository = new ClienteRepository(
+                "Data Source=LAB1502-005\\SQLEXPRESS;" +
+                "Initial Catalog=Neptuno;" +
+                "User ID=userHugo;" +
+                "Password=12345678;" +
+                "TrustServerCertificate=True"
+            );
+            clienteService = new ClienteService(repository);
         }
 
         private void btnAgregar_Click(object sender, RoutedEventArgs e)
         {
-            var cliente = ObtenerClienteFormulario();
-            AgregarCliente(cliente);
-            ListarClientes();
-            LimpiarFormulario();
+            try
+            {
+                var cliente = ObtenerClienteFormulario();
+                clienteService.AgregarCliente(cliente);
+                ListarClientes();
+                LimpiarFormulario();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void btnActualizar_Click(object sender, RoutedEventArgs e)
         {
-            var cliente = ObtenerClienteFormulario();
-            ActualizarCliente(cliente);
-            ListarClientes();
-            LimpiarFormulario();
-        }
-
-        // Evento Eliminar
-        private void btnEliminar_Click(object sender, RoutedEventArgs e)
-        {
-            if (!string.IsNullOrWhiteSpace(txtIdCliente.Text))
+            try
             {
-                EliminarCliente(txtIdCliente.Text);
+                var cliente = ObtenerClienteFormulario();
+                clienteService.ActualizarCliente(cliente);
                 ListarClientes();
                 LimpiarFormulario();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void btnEliminar_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(txtIdCliente.Text))
+                {
+                    clienteService.EliminarCliente(txtIdCliente.Text);
+                    ListarClientes();
+                    LimpiarFormulario();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -111,135 +127,7 @@ namespace Lab_Semana05
 
         private void ListarClientes()
         {
-            dgClientes.ItemsSource = ObtenerClientes();
-        }
-
-        private void AgregarCliente(Cliente cliente)
-        {
-            try
-            {
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                {
-                    conn.Open();
-                    string query = @"INSERT INTO clientes 
-                        (idCliente, NombreCompañia, NombreContacto, CargoContacto, Direccion, Ciudad, Region, CodPostal, Pais, Telefono, Fax)
-                        VALUES (@idCliente, @NombreCompañia, @NombreContacto, @CargoContacto, @Direccion, @Ciudad, @Region, @CodPostal, @Pais, @Telefono, @Fax)";
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@idCliente", cliente.IdCliente);
-                        cmd.Parameters.AddWithValue("@NombreCompañia", cliente.NombreCompañia);
-                        cmd.Parameters.AddWithValue("@NombreContacto", (object?)cliente.NombreContacto ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@CargoContacto", (object?)cliente.CargoContacto ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Direccion", (object?)cliente.Direccion ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Ciudad", (object?)cliente.Ciudad ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Region", (object?)cliente.Region ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@CodPostal", (object?)cliente.CodPostal ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Pais", (object?)cliente.Pais ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Telefono", (object?)cliente.Telefono ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Fax", (object?)cliente.Fax ?? DBNull.Value);
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al agregar cliente: " + ex.Message);
-            }
-        }
-
-        private List<Cliente> ObtenerClientes()
-        {
-            var clientes = new List<Cliente>();
-            try
-            {
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                {
-                    conn.Open();
-                    string query = "SELECT * FROM clientes";
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
-                    using (SqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            clientes.Add(new Cliente
-                            {
-                                IdCliente = reader["idCliente"].ToString(),
-                                NombreCompañia = reader["NombreCompañia"].ToString(),
-                                NombreContacto = reader["NombreContacto"] as string,
-                                CargoContacto = reader["CargoContacto"] as string,
-                                Direccion = reader["Direccion"] as string,
-                                Ciudad = reader["Ciudad"] as string,
-                                Region = reader["Region"] as string,
-                                CodPostal = reader["CodPostal"] as string,
-                                Pais = reader["Pais"] as string,
-                                Telefono = reader["Telefono"] as string,
-                                Fax = reader["Fax"] as string
-                            });
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al obtener clientes: " + ex.Message);
-            }
-            return clientes;
-        }
-
-        private void ActualizarCliente(Cliente cliente)
-        {
-            try
-            {
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                {
-                    conn.Open();
-                    string query = @"UPDATE clientes SET 
-                        NombreCompañia=@NombreCompañia, NombreContacto=@NombreContacto, CargoContacto=@CargoContacto, 
-                        Direccion=@Direccion, Ciudad=@Ciudad, Region=@Region, CodPostal=@CodPostal, 
-                        Pais=@Pais, Telefono=@Telefono, Fax=@Fax
-                        WHERE idCliente=@idCliente";
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@idCliente", cliente.IdCliente);
-                        cmd.Parameters.AddWithValue("@NombreCompañia", cliente.NombreCompañia);
-                        cmd.Parameters.AddWithValue("@NombreContacto", (object?)cliente.NombreContacto ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@CargoContacto", (object?)cliente.CargoContacto ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Direccion", (object?)cliente.Direccion ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Ciudad", (object?)cliente.Ciudad ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Region", (object?)cliente.Region ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@CodPostal", (object?)cliente.CodPostal ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Pais", (object?)cliente.Pais ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Telefono", (object?)cliente.Telefono ?? DBNull.Value);
-                        cmd.Parameters.AddWithValue("@Fax", (object?)cliente.Fax ?? DBNull.Value);
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al actualizar cliente: " + ex.Message);
-            }
-        }
-
-        private void EliminarCliente(string idCliente)
-        {
-            try
-            {
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                {
-                    conn.Open();
-                    string query = "DELETE FROM clientes WHERE idCliente=@idCliente";
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@idCliente", idCliente);
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al eliminar cliente: " + ex.Message);
-            }
+            dgClientes.ItemsSource = clienteService.ObtenerClientes();
         }
     }
 }

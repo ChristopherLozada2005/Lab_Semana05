@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Lab_Semana05
 {
-    internal class Cliente
+    public class Cliente
     {
         public string IdCliente { get; set; }
         public string NombreCompañia { get; set; }
