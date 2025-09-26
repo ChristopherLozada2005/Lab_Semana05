@@ -107,11 +107,9 @@ namespace Lab_Semana05
             var clientes = new List<Cliente>();
             using var conn = new SqlConnection(connectionString);
             conn.Open();
-            string query = @"SELECT idCliente, NombreCompañia, NombreContacto, CargoContacto, Direccion, Ciudad, Region, CodPostal, Pais, Telefono, Fax
-                     FROM clientes
-                     WHERE enable = 1 AND NombreCompañia LIKE @nombre";
-            using var cmd = new SqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@nombre", "%" + nombreCompania + "%");
+            using var cmd = new SqlCommand("USP_BuscarClientesPorNombre", conn);
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@nombre", nombreCompania);
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
             {
